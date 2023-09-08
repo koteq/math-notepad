@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "serve": "npm run serve -w packages/math-notepad",
-    "build": "npm run build -w packages/ext-mathjs && npm run build -w packages/lang-mathjs && npm run build -w packages/math-notepad"
+    "build": "npm run build -w packages/lang-mathjs -w packages/ext-mathjs -w packages/math-notepad"
   },
   "dependencies": {},
   "devDependencies": {
