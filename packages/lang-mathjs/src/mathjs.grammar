@@ -1,0 +1,151 @@
+// TODO update precedence
+@precedence {
+  cond,
+  trail,
+  power @right,
+  prefix,
+  times @left,
+  plus @left,
+  range @right,
+  conv @left,
+  shift @left,
+  bitand @left,
+  xor @left,
+  bitor @left,
+  compare @left,
+  as @left,
+  and @left,
+  or @left,
+  ternary @right,
+  semicolon @left
+}
+  
+@top Expressions { expression ((";" | newline) expression)* }
+
+expression {
+  Grouping |
+  Matrix |
+  Object |
+  CallExpression |
+  FunctionDeclaration { FunctionName ArgumentList AssignOp{"="} expression } |
+  IndexExpression |
+  PropertyExpression |
+  BinaryExpression {
+    expression !compare (CompareOp {"==" | "!=" | "<" | ">" | "<=" | ">="}) expression |
+    expression !bitor BitOp{"|"} expression |
+    expression !xor BitOp{"^|"} expression |
+    expression !bitand BitOp{"&"} expression |
+    expression !shift BitOp{"<<" | ">>" ">"?} expression |
+    expression !plus ArithOp{"+" | "-"} expression |
+    expression !times ArithOp{"*" | "/"} expression |
+    expression !times ArithOp{"%" ~mod | kw<"mod">} expression |
+    expression !power ArithOp{"^"} expression |
+    expression !times ElWiseOp{".*" | "./"} expression |
+    expression !power ElWiseOp{".^"} expression |
+    expression !and kw<"and"> expression |
+    expression !or kw<"or"> expression |
+    expression !xor kw<"xor"> expression |
+    expression !range RangeOp{":" ~col} expression |
+    expression !conv (kw<"in"> | kw<"to">) expression // TODO should replace expressions with units kw?
+  } |
+  UnaryExpression {
+    !prefix (ArithOp{"+" | "-"} | BitOp{"~"}) expression |
+    expression !times PercentageOp{"%" ~mod} |
+    expression !trail TransposeOp{"'"} |
+    expression !trail FactorialOp{"!"} |
+    kw<"not"> expression
+  } |
+  TernaryExpression {
+    expression !ternary LogicOp{"?"} expression ":" ~col expression |
+    expression !ternary RangeOp{":" ~col} expression RangeOp{":" ~col} expression
+  } |
+  AssignmentExpression |
+  Identifier |
+  Number |
+  String |
+  @specialize[@name=Boolean]<identifier, "true" | "false"> |
+  ImpliedMultiplication {
+    Number Identifier |
+    Number (Grouping | CallExpression) |
+    Matrix (Number | Identifier | CallExpression) |
+    // Identifier spaces (Number | Identifier | CallExpression) |
+    CallExpression (Number | Identifier | CallExpression) |
+    IndexExpression (Number | Identifier | CallExpression) |
+    // PropertyExpression spaces (Number | Identifier | CallExpression) |
+    Grouping (Number | Identifier | CallExpression | Grouping)
+  }
+}
+
+AssignmentExpression { (Identifier | IndexExpression | PropertyExpression) AssignOp{"="} expression }
+
+CallExpression { FunctionName ArgumentList }
+
+IndexExpression { expression !trail "[" expression (RangeOp{":" ~col} expression)? "]" }
+
+PropertyExpression { expression !trail "." PropertyName }
+
+Grouping { "(" expression ")" }
+
+Object { "{" commaSep<Property> "}" }
+
+Property { (PropertyName | String) (":" ~col expression)? }
+
+PropertyName { identifier }
+
+Matrix { "[" commaSep<expression> !semicolon (";" commaSep<expression>)* "]" }
+
+ArgumentList { "(" commaSep<expression> ")" }
+
+Identifier { identifier ~identifier }
+
+FunctionName { identifier ~identifier }
+
+commaSep<expr> { (expr ("," expr)*)? }
+
+kw<term> { @specialize[@name={term}]<identifier, term> }
+
+@skip { 
+  spaces |
+  LineComment
+}
+
+@tokens {
+  identifierChar {
+    @asciiLetter |
+    $[\u00C0-\u02AF] | // Latin Letters with Accents
+    $[\u0370-\u03FF] | // Greek Letters
+    $[\u2100-\u214F] | // Letter-like Symbols
+    $[\u{1D400}-\u{1D7FF}] | // Mathematical Alphanumeric Symbols
+    $[_$] // Underscore and Dollar Sign
+    // See https://github.com/josdejong/mathjs/blob/2a3c99de7a81626c9aa0e1dea46ea710fa5abd03/src/expression/parse.js#L469-L491
+  }
+
+  identifier { identifierChar (identifierChar | @digit)* }
+
+  Number {
+    (@digit @digit* ("." @digit*)? | "." @digit @digit*)
+      (("e" | "E") ("+" | "-")? @digit+)? |
+    "0x" $[0-9a-fA-F]+ ("." $[0-9a-fA-F]*)? ("i" @digit+)? |
+    "0b" $[01]+ ("." $[01]*)? ("i" @digit+)? |
+    "0o" $[0-7_]+ ("." $[0-7_]*)? ("i" @digit+)?
+  }
+
+  @precedence { Number "." }
+
+  String {
+    "'" (!['\\\n\r] | "\\" _)* "'" |
+    '"' (!["\\\n\r] | "\\" _)* '"'
+  }
+
+  LineComment { "#" ![\n]* }
+
+  spaces { $[ \t] }
+  newline { $[\n] }
+
+  "(" ")"
+  "[" "]"
+  "{" "}"
+  "." "," ";" ":"
+}
+
+@detectDelim

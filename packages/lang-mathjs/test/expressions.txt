@@ -1,0 +1,412 @@
+# Grouping
+
+2 * (3 + 4)
+
+==>
+
+Expressions(BinaryExpression(Number,ArithOp,Grouping(BinaryExpression(Number,ArithOp,Number))))
+
+# Matrix
+
+[[1,2],[3,4]]
+
+==>
+
+Expressions(Matrix(Matrix(Number,Number),Matrix(Number,Number)))
+
+# Index 
+
+matrix[1]
+
+===>
+
+Expressions(IndexExpression(Identifier,Number))
+
+# Object
+
+{a: 1, b: 2}
+
+==>
+
+Expressions(Object(Property(PropertyName,Number),Property(PropertyName,Number)))
+
+# Parameter separator
+
+max(2, 1, 5)
+
+==>
+
+Expressions(CallExpression(FunctionName,ArgumentList(Number,Number,Number)))
+
+# Property accessor
+
+obj.a
+
+==>
+
+Expressions(PropertyExpression(Identifier,PropertyName))
+
+# Statement separator
+
+a=2; b=3; a*b
+
+==>
+
+Expressions(
+    AssignmentExpression(Identifier,AssignOp,Number),
+    AssignmentExpression(Identifier,AssignOp,Number),
+    BinaryExpression(Identifier,ArithOp,Identifier))
+
+# Row separator
+
+[1,2;3,4]
+
+==>
+
+Expressions(Matrix(Number,Number,";",Number,Number))
+
+# Statement separator
+
+a=2
+b=3
+a*b
+
+==>
+
+Expressions(
+    AssignmentExpression(Identifier,AssignOp,Number),
+    AssignmentExpression(Identifier,AssignOp,Number),
+    BinaryExpression(Identifier,ArithOp,Identifier))
+
+# Add, subtract, multiply, divide, power
+
+4 + 5
+7 - 3
+2 * 3
+6 / 2
+2 ^ 3
+
+==>
+
+Expressions(
+    BinaryExpression(Number,ArithOp,Number),
+    BinaryExpression(Number,ArithOp,Number),
+    BinaryExpression(Number,ArithOp,Number),
+    BinaryExpression(Number,ArithOp,Number),
+    BinaryExpression(Number,ArithOp,Number))
+
+# Unary plus/minus and bitwise not
+
++4
+-4
+~2
+
+==>
+
+Expressions(
+    UnaryExpression(ArithOp,Number),
+    UnaryExpression(ArithOp,Number),
+    UnaryExpression(BitOp,Number))
+
+# Element-wise multiply, divide
+
+[1,2,3] .* [1,2,3]
+[9,6,4] ./ [3,2,2]
+[2,3,2] .^ [3,3,2]
+
+==>
+
+Expressions(
+    BinaryExpression(Matrix(Number,Number,Number),ElWiseOp,Matrix(Number,Number,Number)),
+    BinaryExpression(Matrix(Number,Number,Number),ElWiseOp,Matrix(Number,Number,Number)),
+    BinaryExpression(Matrix(Number,Number,Number),ElWiseOp,Matrix(Number,Number,Number)))
+
+# Percentage
+
+8%
+100 + 3%
+100 - 3%
+3% + 100
+
+==>
+
+Expressions(
+    UnaryExpression(Number,PercentageOp),
+    BinaryExpression(Number,ArithOp,UnaryExpression(Number,PercentageOp)),
+    BinaryExpression(Number,ArithOp,UnaryExpression(Number,PercentageOp)),
+    BinaryExpression(UnaryExpression(Number,PercentageOp),ArithOp,Number))
+
+# Modulus
+
+8 % 3
+8 mod 3
+
+==>
+
+Expressions(
+    BinaryExpression(Number,ArithOp,Number),
+    BinaryExpression(Number,ArithOp(mod),Number))
+
+# Transpose
+
+[[1,2],[3,4]]'
+
+==>
+
+Expressions(UnaryExpression(Matrix(Matrix(Number,Number),Matrix(Number,Number)),TransposeOp))
+
+# Factorial
+
+5!
+
+==>
+
+Expressions(UnaryExpression(Number,FactorialOp))
+
+# Bitwise
+
+5 & 3
+~2
+5 | 3
+5 ^| 2
+
+==>
+
+Expressions(
+    BinaryExpression(Number,BitOp,Number),
+    UnaryExpression(BitOp,Number),
+    BinaryExpression(Number,BitOp,Number),
+    BinaryExpression(Number,BitOp,Number))
+
+# Shift
+
+4 << 1
+8 >> 1
+-8 >>> 1
+
+==>
+
+Expressions(
+    BinaryExpression(Number,BitOp,Number),
+    BinaryExpression(Number,BitOp,Number),
+    BinaryExpression(UnaryExpression(ArithOp,Number),BitOp,Number))
+
+# Logical
+
+true and false
+not true
+true or false
+true xor true
+
+==>
+
+Expressions(
+    BinaryExpression(Boolean,and,Boolean),
+    UnaryExpression(not,Boolean),
+    BinaryExpression(Boolean,or,Boolean),
+    BinaryExpression(Boolean,xor,Boolean))
+
+# Assignment
+
+a = 5
+
+==>
+
+Expressions(AssignmentExpression(Identifier,AssignOp,Number))
+
+# Conditional expression
+
+15 > 100 ? 1 : -1
+
+==>
+
+Expressions(TernaryExpression(BinaryExpression(Number,CompareOp,Number),LogicOp,Number,UnaryExpression(ArithOp,Number)))
+
+# Range
+
+1:4
+0:2:10
+
+==>
+
+Expressions(
+    BinaryExpression(Number,RangeOp,Number),
+    TernaryExpression(Number,RangeOp,Number,RangeOp,Number))
+
+# Comparison
+
+2 == 4 - 2
+2 != 3
+2 < 3
+2 > 3
+4 <= 3
+2 + 4 >= 6
+
+==>
+
+Expressions(
+    BinaryExpression(Number,CompareOp,BinaryExpression(Number,ArithOp,Number)),
+    BinaryExpression(Number,CompareOp,Number),
+    BinaryExpression(Number,CompareOp,Number),
+    BinaryExpression(Number,CompareOp,Number),
+    BinaryExpression(Number,CompareOp,Number),
+    BinaryExpression(BinaryExpression(Number,ArithOp,Number),CompareOp,Number))
+
+# Function calls
+
+sqrt(25)
+log(10000, 3 + 7)
+sin(pi / 4)
+
+==>
+
+Expressions(
+    CallExpression(FunctionName,ArgumentList(Number)),
+    CallExpression(FunctionName,ArgumentList(Number,BinaryExpression(Number,ArithOp,Number))),
+    CallExpression(FunctionName,ArgumentList(BinaryExpression(Identifier,ArithOp,Number))))
+
+
+# Function definition
+
+f(x) = x ^ 2 - 5
+twice(func, x) = func(func(x))
+
+==>
+
+Expressions(
+    FunctionDeclaration(FunctionName,ArgumentList(Identifier),AssignOp,BinaryExpression(BinaryExpression(Identifier,ArithOp,Number),ArithOp,Number)),
+    FunctionDeclaration(FunctionName,ArgumentList(Identifier,Identifier),AssignOp,CallExpression(FunctionName,ArgumentList(CallExpression(FunctionName,ArgumentList(Identifier))))))
+
+# Typed function
+
+f = typed({"number": f(x) = x ^ 2 - 5})
+
+==>
+
+Expressions(AssignmentExpression(Identifier,AssignOp,CallExpression(FunctionName,ArgumentList(Object(Property(String,FunctionDeclaration(FunctionName,ArgumentList(Identifier),AssignOp,BinaryExpression(BinaryExpression(Identifier,ArithOp,Number),ArithOp,Number))))))))
+
+# Booleans
+
+true
+false
+
+==>
+
+Expressions(Boolean,Boolean)
+
+# Numbers
+
+2
+3.14
+.99
+1.4e3
+22e-3
+0b11
+0o77
+0xff
+0xffi8
+0xffffffffi32
+0b1.1
+0o1.4
+0x1.8
+2 + 3i
+
+==>
+
+Expressions(
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    Number,
+    BinaryExpression(Number,ArithOp,ImpliedMultiplication(Number,Identifier)))
+
+# Units
+
+5.4 kg
+2 inch to cm
+20 celsius in fahrenheit
+90 km/h to m/s
+0.5kg + 33g
+3 inch + 2 cm
+12 seconds * 2
+sin(45 deg)
+9.81 m/s^2 * 5 s to mi/h
+
+==>
+
+Expressions(
+    ImpliedMultiplication(Number,Identifier),
+    BinaryExpression(ImpliedMultiplication(Number,Identifier),to,Identifier),
+    BinaryExpression(ImpliedMultiplication(Number,Identifier),in,Identifier),
+    BinaryExpression(BinaryExpression(ImpliedMultiplication(Number,Identifier),ArithOp,Identifier),to,BinaryExpression(Identifier,ArithOp,Identifier)),
+    BinaryExpression(ImpliedMultiplication(Number,Identifier),ArithOp,ImpliedMultiplication(Number,Identifier)),
+    BinaryExpression(ImpliedMultiplication(Number,Identifier),ArithOp,ImpliedMultiplication(Number,Identifier)),
+    BinaryExpression(ImpliedMultiplication(Number,Identifier),ArithOp,Number),
+    CallExpression(FunctionName,ArgumentList(ImpliedMultiplication(Number,Identifier))),
+    BinaryExpression(BinaryExpression(BinaryExpression(ImpliedMultiplication(Number,Identifier),ArithOp,BinaryExpression(Identifier,ArithOp,Number)),ArithOp,ImpliedMultiplication(Number,Identifier)),to,BinaryExpression(Identifier,ArithOp,Identifier)))
+
+# Strings
+
+"hello"
+'world'
+a = concat("hello", " world")
+a[1:5]
+a[1] = "H"
+a[7:12] = "there!"
+
+==>
+
+Expressions(
+    String,
+    String,
+    AssignmentExpression(Identifier,AssignOp,CallExpression(FunctionName,ArgumentList(String,String))),
+    IndexExpression(Identifier,BinaryExpression(Number,RangeOp,Number)),
+    AssignmentExpression(IndexExpression(Identifier,Number),AssignOp,String),
+    AssignmentExpression(IndexExpression(Identifier,BinaryExpression(Number,RangeOp,Number)),AssignOp,String))
+
+# Objects
+
+{a: 2 + 1, b: 4}
+{"a": 2 + 1, 'b': 4}
+{a: 2, b: {c: 3, d: 4}}
+{obj: {prop: 42}}
+obj.prop
+obj["prop"]
+obj.prop = 43
+obj["prop"] = 43
+
+==>
+
+Expressions(
+    Object(Property(PropertyName,BinaryExpression(Number,ArithOp,Number)),Property(PropertyName,Number)),
+    Object(Property(String,BinaryExpression(Number,ArithOp,Number)),Property(String,Number)),
+    Object(Property(PropertyName,Number),Property(PropertyName,Object(Property(PropertyName,Number),Property(PropertyName,Number)))),
+    Object(Property(PropertyName,Object(Property(PropertyName,Number)))),
+    PropertyExpression(Identifier,PropertyName),
+    IndexExpression(Identifier,String),
+    AssignmentExpression(PropertyExpression(Identifier,PropertyName),AssignOp,Number),
+    AssignmentExpression(IndexExpression(Identifier,String),AssignOp,Number))
+
+# Implied multiplication
+
+2 pi
+(1+2)(3+4)
+20 kg / 4 kg
+20 / 4 kg
+
+==>
+
+Expressions(
+    ImpliedMultiplication(Number,Identifier),
+    ImpliedMultiplication(Grouping("(",BinaryExpression(Number,ArithOp,Number),")"),Grouping("(",BinaryExpression(Number,ArithOp,Number),")")),
+    BinaryExpression(ImpliedMultiplication(Number,Identifier),ArithOp,ImpliedMultiplication(Number,Identifier)),
+    BinaryExpression(Number,ArithOp,ImpliedMultiplication(Number,Identifier)))
