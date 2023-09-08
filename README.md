@@ -1,2 +1,3 @@
-# math-notepad
-CodeMirror-based Math.js Notepad
+# Math Notepad
+
+https://koteq.github.io/math-notepad/
