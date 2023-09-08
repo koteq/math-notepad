@@ -1,7 +1,8 @@
-import { parser } from "./mathjs.grammar";
-import { LRLanguage, LanguageSupport } from "@codemirror/language";
+import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
+import { LanguageSupport, LRLanguage, syntaxTree } from "@codemirror/language";
 import { styleTags, tags as t } from "@lezer/highlight";
-import {completeFromList} from "@codemirror/autocomplete";
+import { constants } from "./constants";
+import { parser } from "./mathjs.grammar";
 
 const parserWithMetadata = parser.configure({
   props: [
@@ -21,14 +22,8 @@ const parserWithMetadata = parser.configure({
       "[ ]": t.squareBracket,
       "{ }": t.brace,
     }),
-    // indentNodeProp.add({
-    //   Application: context => context.column(context.node.from) + context.unit
-    // }),
-    // foldNodeProp.add({
-    //   Application: foldInside
-    // })
-  ]
-})
+  ],
+});
 
 export const mathjsLanguage = LRLanguage.define({
   parser: parserWithMetadata,
@@ -37,19 +32,24 @@ export const mathjsLanguage = LRLanguage.define({
   },
 });
 
+function completeMathjs(context: CompletionContext): CompletionResult | null {
+  const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
+  if (nodeBefore.name === "Identifier") {
 
+    return {
+      from: context.pos,
+      options: constants,
+      validFor: /^\w*$/
+    }
+  }
 
-export const mathjsCompletion = mathjsLanguage.data.of({
-  autocomplete: completeFromList([
-    {label: "defun", type: "keyword"},
-    {label: "defvar", type: "keyword"},
-    {label: "let", type: "keyword"},
-    {label: "cons", type: "function"},
-    {label: "car", type: "function"},
-    {label: "cdr", type: "function"}
-  ])
-})
+  return null;
+}
+
+const mathjsCompletions = mathjsLanguage.data.of({
+  autocomplete: completeMathjs,
+});
 
 export function mathjs() {
-  return new LanguageSupport(mathjsLanguage, [mathjsCompletion]);
+  return new LanguageSupport(mathjsLanguage, [mathjsCompletions]);
 }
