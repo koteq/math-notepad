@@ -33,14 +33,10 @@
     "build": "rollup -c",
     "prepublishOnly": "rm -rf lib && rollup -c"
   },
-  "dependencies": {},
   "devDependencies": {
     "@codemirror/state": "^6.2.1",
     "@codemirror/view": "^6.18.0",
-    "@rollup/plugin-typescript": "^11.1.3",
-    "mathjs": "^11.11.0",
-    "rollup": "^3.28.1",
-    "typescript": "^5.2.2"
+    "mathjs": "^11.11.0"
   },
   "peerDependencies": {
     "@codemirror/state": "^6.0.0",
