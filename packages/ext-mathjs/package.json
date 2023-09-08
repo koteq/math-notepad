@@ -33,6 +33,7 @@
     "build": "rollup -c",
     "prepublishOnly": "rm -rf lib && rollup -c"
   },
+  "dependencies": {},
   "devDependencies": {
     "@codemirror/state": "^6.2.1",
     "@codemirror/view": "^6.18.0",
