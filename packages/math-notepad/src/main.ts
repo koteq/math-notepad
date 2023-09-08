@@ -1,7 +1,7 @@
-import { EditorView, basicSetup } from "codemirror";
-import { renderInlineSuggestionPlugin } from "codemirror-extension-inline-mathjs-expressions";
-import { mathjs } from "codemirror-language-mathjs";
 import { EditorState } from "@codemirror/state";
+import { EditorView, basicSetup } from "codemirror";
+import { evaluateMathjsInline } from "codemirror-extension-evaluate-mathjs-inline";
+import { mathjs } from "codemirror-language-mathjs";
 
 new EditorView({
   state: EditorState.create({
@@ -9,7 +9,7 @@ new EditorView({
     extensions: [
       basicSetup,
       mathjs(),
-      renderInlineSuggestionPlugin,
+      evaluateMathjsInline,
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           localStorage.setItem("doc", update.state.doc.toString());

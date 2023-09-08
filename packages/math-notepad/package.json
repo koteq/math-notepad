@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "codemirror": "^6.0.1",
-    "codemirror-extension-inline-mathjs-expressions": "file:../ext-mathjs",
+    "codemirror-extension-evaluate-mathjs-inline": "file:../ext-mathjs",
     "codemirror-language-mathjs": "file:../lang-mathjs",
     "mathjs": "^11.10.1"
   },
