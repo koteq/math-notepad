@@ -1,5 +1,5 @@
 {
-  "name": "codemirror-extension-inline-mathjs-expressions",
+  "name": "codemirror-extension-evaluate-mathjs-inline",
   "version": "0.0.0",
   "description": "Adds inline computation of Math.js expressions to CodeMirror",
   "author": "Kot",
@@ -40,7 +40,6 @@
     "mathjs": "^11.11.0"
   },
   "peerDependencies": {
-    "@codemirror/state": "^6.0.0",
     "@codemirror/view": "^6.0.0",
     "mathjs": "*"
   }
