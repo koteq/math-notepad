@@ -410,3 +410,15 @@ Expressions(
     ImpliedMultiplication(Grouping("(",BinaryExpression(Number,ArithOp,Number),")"),Grouping("(",BinaryExpression(Number,ArithOp,Number),")")),
     BinaryExpression(ImpliedMultiplication(Number,Identifier),ArithOp,ImpliedMultiplication(Number,Identifier)),
     BinaryExpression(Number,ArithOp,ImpliedMultiplication(Number,Identifier)))
+
+# Comments
+
+# Three
+# comment
+# lines
+
+a = 1
+
+==>
+
+Expressions(LineComment,LineComment,LineComment,AssignmentExpression(Identifier,AssignOp,Number))

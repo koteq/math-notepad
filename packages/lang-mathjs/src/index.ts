@@ -59,7 +59,7 @@ const mathjsFoldings = foldService.of(
       return null;
     }
 
-    return { from: startNode.to, to: endNode.to - 1 };
+    return { from: startNode.to, to: endNode.to };
   },
 );
 

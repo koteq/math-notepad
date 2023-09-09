@@ -20,7 +20,7 @@
   semicolon @left
 }
   
-@top Expressions { expression ((";" | newline) expression)* }
+@top Expressions { newline* expression ((";" | newline+) expression)* newline* }
 
 expression {
   Grouping |
@@ -137,10 +137,10 @@ kw<term> { @specialize[@name={term}]<identifier, term> }
     '"' (!["\\\n\r] | "\\" _)* '"'
   }
 
-  LineComment { "#" ![\n]* }
+  LineComment { "#" ![\n\r]* }
 
   spaces { $[ \t] }
-  newline { $[\n] }
+  newline { $[\n\r] }
 
   "(" ")"
   "[" "]"
