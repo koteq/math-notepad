@@ -1,13 +1,13 @@
 import type { Range } from "@codemirror/state";
 import type { EditorView, ViewUpdate } from "@codemirror/view";
 import { Decoration, ViewPlugin, WidgetType } from "@codemirror/view";
-
-import * as math from "mathjs";
+import { all, create } from "mathjs";
 
 type CompilationCache = Map<string, math.EvalFunction>;
 
 export const evaluateMathjsInline = ViewPlugin.fromClass(
   class {
+    math = create(all);
     decorations = Decoration.none;
     cache: CompilationCache = new Map();
 
@@ -31,7 +31,8 @@ export const evaluateMathjsInline = ViewPlugin.fromClass(
 
         let result: unknown;
         try {
-          const compiled = this.cache.get(line.text) ?? math.compile(line.text);
+          const compiled =
+            this.cache.get(line.text) ?? this.math.compile(line.text);
           newCache.set(line.text, compiled);
           result = compiled.evaluate(scope);
           scope.set("$_", result);
