@@ -1,5 +1,10 @@
 import { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
-import { LanguageSupport, LRLanguage, syntaxTree } from "@codemirror/language";
+import {
+  LRLanguage,
+  LanguageSupport,
+  foldService,
+  syntaxTree,
+} from "@codemirror/language";
 import { styleTags, tags as t } from "@lezer/highlight";
 import { constants } from "./constants";
 import { parser } from "./mathjs.grammar";
@@ -32,15 +37,40 @@ export const mathjsLanguage = LRLanguage.define({
   },
 });
 
+const mathjsFoldings = foldService.of(
+  (
+    state,
+    lineStart,
+    _lineEnd,
+  ): {
+    from: number;
+    to: number;
+  } | null => {
+    const startNode = syntaxTree(state).cursorAt(lineStart, 1).node;
+    if (!startNode.type.is("LineComment")) {
+      return null;
+    }
+
+    let endNode = startNode;
+    while (endNode.nextSibling && !endNode.nextSibling.type.is("LineComment")) {
+      endNode = endNode.nextSibling;
+    }
+    if (endNode === startNode) {
+      return null;
+    }
+
+    return { from: startNode.to, to: endNode.to - 1 };
+  },
+);
+
 function completeMathjs(context: CompletionContext): CompletionResult | null {
   const nodeBefore = syntaxTree(context.state).resolveInner(context.pos, -1);
   if (nodeBefore.name === "Identifier") {
-
     return {
       from: context.pos,
       options: constants,
-      validFor: /^\w*$/
-    }
+      validFor: /^\w*$/,
+    };
   }
 
   return null;
@@ -50,6 +80,9 @@ const mathjsCompletions = mathjsLanguage.data.of({
   autocomplete: completeMathjs,
 });
 
-export function mathjs() {
-  return new LanguageSupport(mathjsLanguage, [mathjsCompletions]);
+export function mathjs(): LanguageSupport {
+  return new LanguageSupport(mathjsLanguage, [
+    mathjsFoldings,
+    mathjsCompletions,
+  ]);
 }
