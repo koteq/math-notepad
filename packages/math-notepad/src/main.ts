@@ -1,14 +1,11 @@
 import { foldEffect, foldState, unfoldEffect } from "@codemirror/language";
-import {
-  EditorSelection,
-  SelectionRange,
-  EditorState,
-  EditorStateConfig,
-} from "@codemirror/state";
+import { EditorState, EditorStateConfig } from "@codemirror/state";
 import { ViewUpdate } from "@codemirror/view";
 import { EditorView, basicSetup } from "codemirror";
 import { evaluateMathjsInline } from "codemirror-extension-evaluate-mathjs-inline";
 import { mathjs } from "codemirror-language-mathjs";
+
+import "./main.css";
 
 const localStorageState = new (class {
   storageKey = "editorState";
@@ -58,5 +55,5 @@ new EditorView({
       }),
     ],
   }),
-  parent: document.body,
+  parent: document.getElementById("editor")!,
 });

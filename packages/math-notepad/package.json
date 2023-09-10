@@ -24,6 +24,7 @@
     "mathjs": "^11.10.1"
   },
   "devDependencies": {
+    "rollup-plugin-postcss": "^4.0.2",
     "serve": "^14.2.1"
   }
 }
