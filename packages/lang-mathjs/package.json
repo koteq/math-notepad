@@ -30,10 +30,7 @@
     "directory": "packages/lang-mathjs"
   },
   "scripts": {
-    "build": "rollup -c",
-    "pretest": "rollup -c",
-    "test": "mocha test/**/*.js",
-    "prepublishOnly": "rm -rf lib && rollup -c"
+    "test": "mocha test/**/*.js"
   },
   "dependencies": {
     "@lezer/highlight": "^1.1.6",

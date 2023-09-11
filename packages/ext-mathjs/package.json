@@ -29,10 +29,6 @@
     "url": "git+https://github.com/koteq/math-notepad.git",
     "directory": "packages/ext-mathjs"
   },
-  "scripts": {
-    "build": "rollup -c",
-    "prepublishOnly": "rm -rf lib && rollup -c"
-  },
   "dependencies": {},
   "devDependencies": {
     "@codemirror/state": "^6.2.1",

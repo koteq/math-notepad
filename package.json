@@ -1,12 +1,13 @@
 {
   "name": "root",
   "private": true,
+  "type": "module",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "serve": "npm run serve -w packages/math-notepad",
-    "build": "npm run build -w packages/lang-mathjs -w packages/ext-mathjs -w packages/math-notepad"
+    "build": "rollup -c",
+    "serve": "serve packages/math-notepad/public"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.4",
@@ -14,6 +15,8 @@
     "@rollup/plugin-typescript": "^11.1.3",
     "prettier": "^3.0.3",
     "rollup": "^3.28.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "serve": "^14.2.1",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2"
   },
