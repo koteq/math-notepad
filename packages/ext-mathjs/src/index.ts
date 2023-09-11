@@ -25,9 +25,16 @@ export const evaluateMathjsInline = ViewPlugin.fromClass(
       const scope = new Map();
       const widgets: Range<Decoration>[] = [];
       const newCache: CompilationCache = new Map();
+      const selectionLine = this.editor.state.doc.lineAt(
+        this.editor.state.selection.main.head,
+      ).number;
 
-      for (let n = 1; n <= this.editor.state.doc.lines; n++) {
-        const line = this.editor.state.doc.line(n);
+      for (
+        let currentLine = 1;
+        currentLine <= this.editor.state.doc.lines;
+        currentLine++
+      ) {
+        const line = this.editor.state.doc.line(currentLine);
 
         let result: unknown;
         try {
@@ -37,7 +44,7 @@ export const evaluateMathjsInline = ViewPlugin.fromClass(
           result = compiled.evaluate(scope);
           scope.set("$_", result);
         } catch (error) {
-          result = error;
+          result = currentLine === selectionLine ? undefined : error;
         }
 
         if (result !== undefined && typeof result !== "function") {
